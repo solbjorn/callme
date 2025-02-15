@@ -148,14 +148,14 @@ namespace CallMe
 		};
 
 		template<typename Ret, typename...Args>
-			requires (not std::is_same_v<stdcallT, defaultcallT>)
+			requires (not std::is_same_v<stdcallT, defaultcallT>) && (not std::is_same_v<stdcallT, cdeclT>)
 		struct FunctionDeducer<Ret(__stdcall*)(Args...)>
 		{
 			using Signature FixClang = Ret(Args...);
 		};
 
 		template<typename Ret, typename...Args>
-			requires (not std::is_same_v<fastcallT, defaultcallT>)
+			requires (not std::is_same_v<fastcallT, defaultcallT>) && (not std::is_same_v<fastcallT, cdeclT>) && (not std::is_same_v<fastcallT, stdcallT>)
 		struct FunctionDeducer<Ret(__fastcall*)(Args...)>
 		{
 			using Signature FixClang = Ret(Args...);
@@ -431,8 +431,8 @@ namespace CallMe
 			}
 
 			ErasedDelegate(const ErasedDelegate& other) = default;
-
 			ErasedDelegate& operator=(const ErasedDelegate& other) = default;
+			bool operator==(const ErasedDelegate& other) const = default;
 
 	        constexpr ErasedDelegate() noexcept:
 	            _invoker(NullInvoke<R,ClassArgs...>),
@@ -625,6 +625,7 @@ namespace CallMe
 
 		Delegate(const Delegate& other)            = default;
 		Delegate& operator=(const Delegate& other) = default;
+		bool operator==(const Delegate& other) const = default;
 	};
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
