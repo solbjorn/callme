@@ -881,7 +881,7 @@ namespace CallMe
 
 		template<internal::NonLiteFunctor Functor>
 		DELETE_FUNCTION(auto fromFunctor(Functor&&), 
-						MsgNoRValueObjects);
+						MsgNoRValueObjects)
 
 		template<internal::AnyFunctor Functor>
 		auto fromFunctor(Functor& functor)
@@ -950,7 +950,7 @@ namespace CallMe
 		// this handles both Object* and Object& cases
 		template<internal::FreeFunction auto StaticMethod, typename Object>
 		DELETE_FUNCTION(auto fromMethod(Object),
-						MsgStaticMethodNotAllowed);
+						MsgStaticMethodNotAllowed)
 
 		template<internal::MemberFunction auto Method, internal::Class Object>
 		DELETE_FUNCTION(auto fromMethod(Object&&),
@@ -959,12 +959,12 @@ namespace CallMe
 		template<internal::AnyFunctor Functor>
 		DELETE_OWNING_FUNCTION(auto fromFunctorOwned(const Functor* functor),
 								functor,
-							    MsgConstOwnedObjectsNotAllowed);
+							    MsgConstOwnedObjectsNotAllowed)
 
 		template<internal::AnyFunctor Functor>
 		DELETE_OWNING_FUNCTION(auto fromFunctorOwned(Functor&),
 							   static_cast<Functor*>(nullptr),
-							   MsgRefToObjNotAllowed);
+							   MsgRefToObjNotAllowed)
 
 		template<internal::AnyFunctor Functor>
 		auto fromFunctorOwned(Functor* functor)
@@ -991,7 +991,7 @@ namespace CallMe
 		template<internal::FreeFunction auto StaticMethod, typename Object>
 		DELETE_OWNING_FUNCTION(auto fromMethodOwned(Object object),
 							   internal::ownedPtrToDelete(object),
-							   MsgStaticMethodNotAllowed);
+							   MsgStaticMethodNotAllowed)
 
 		#ifdef COMPILE_INVALID_CTORS
 			MSVC_SUPPRESS_WARNING_WITH_PUSH(4702)//C4702 unreachable code
