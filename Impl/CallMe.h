@@ -77,6 +77,10 @@ namespace CallMe
 		#define MSVC_SUPPRESS_WARNING_WITH_PUSH(w)
 	#endif
 
+	#if defined(__INTEL_COMPILER) || defined(__clang__) || defined(GCC_COMPILER)
+		#define CALLME_ATTRIBUTE_ABI
+	#endif
+
     namespace internal
     {
 		constexpr static bool LiteFunctorsAsFunctions = false;
@@ -114,6 +118,56 @@ namespace CallMe
             using ClassType FixClang = T;
             constexpr static bool ConstFunction = false;
         };
+
+#ifdef CALLME_ATTRIBUTE_ABI
+		using defabiT		= void(*)();
+		using msabiT		= void(__attribute__((ms_abi))*)();
+		using sysvabiT		= void(__attribute__((sysv_abi))*)();
+
+		template<typename Ret, typename T, typename...Args>
+			requires (not std::is_same_v<msabiT, defabiT>)
+		struct MemberFunctionDeducer<Ret(__attribute__((ms_abi)) T::*)(Args...) const>
+		{
+			using NonmemberSignature FixClang = Ret(Args...);
+			using NonmemberFnPtr FixClang = Ret(__attribute__((ms_abi))*)(Args...);
+			using RetType FixClang = Ret;
+			using ClassType FixClang = T;
+			constexpr static bool ConstFunction = true;
+		};
+
+		template<typename Ret, typename T, typename...Args>
+			requires (not std::is_same_v<msabiT, defabiT>)
+		struct MemberFunctionDeducer<Ret(__attribute__((ms_abi)) T::*)(Args...)>
+		{
+			using NonmemberSignature FixClang = Ret(Args...);
+			using NonmemberFnPtr FixClang = Ret(__attribute__((ms_abi))*)(Args...);
+			using RetType FixClang = Ret;
+			using ClassType FixClang = T;
+			constexpr static bool ConstFunction = false;
+		};
+
+		template<typename Ret, typename T, typename...Args>
+			requires (not std::is_same_v<sysvabiT, defabiT>)
+		struct MemberFunctionDeducer<Ret(__attribute__((sysv_abi)) T::*)(Args...) const>
+		{
+			using NonmemberSignature FixClang = Ret(Args...);
+			using NonmemberFnPtr FixClang = Ret(__attribute__((sysv_abi))*)(Args...);
+			using RetType FixClang = Ret;
+			using ClassType FixClang = T;
+			constexpr static bool ConstFunction = true;
+		};
+
+		template<typename Ret, typename T, typename...Args>
+			requires (not std::is_same_v<sysvabiT, defabiT>)
+		struct MemberFunctionDeducer<Ret(__attribute__((sysv_abi)) T::*)(Args...)>
+		{
+			using NonmemberSignature FixClang = Ret(Args...);
+			using NonmemberFnPtr FixClang = Ret(__attribute__((sysv_abi))*)(Args...);
+			using RetType FixClang = Ret;
+			using ClassType FixClang = T;
+			constexpr static bool ConstFunction = false;
+		};
+#endif // CALLME_ATTRIBUTE_ABI
 
 		//deduces signatures of functors' operator()
         template<typename T>
@@ -168,6 +222,34 @@ namespace CallMe
 			using Signature FixClang = Ret(Args...);
 		};
 #endif
+
+#ifdef CALLME_ATTRIBUTE_ABI
+		template<typename Ret, typename...Args>
+			requires (not std::is_same_v<msabiT, defabiT>)
+#ifdef _MSC_VER
+			&& (not std::is_same_v<msabiT, cdeclT>)
+			&& (not std::is_same_v<msabiT, stdcallT>)
+			&& (not std::is_same_v<msabiT, fastcallT>)
+			&& (not std::is_same_v<msabiT, vectorcallT>)
+#endif
+		struct FunctionDeducer<Ret(__attribute__((ms_abi))*)(Args...)>
+		{
+			using Signature FixClang = Ret(Args...);
+		};
+
+		template<typename Ret, typename...Args>
+			requires (not std::is_same_v<sysvabiT, defabiT>)
+#ifdef _MSC_VER
+			&& (not std::is_same_v<sysvabiT, cdeclT>)
+			&& (not std::is_same_v<sysvabiT, stdcallT>)
+			&& (not std::is_same_v<sysvabiT, fastcallT>)
+			&& (not std::is_same_v<sysvabiT, vectorcallT>)
+#endif
+		struct FunctionDeducer<Ret(__attribute__((sysv_abi))*)(Args...)>
+		{
+			using Signature FixClang = Ret(Args...);
+		};
+#endif // CALLME_ATTRIBUTE_ABI
 
 		template <typename Functor>
 		concept HasFnOperator = requires
@@ -1006,4 +1088,6 @@ namespace CallMe
 			MSVC_SUPPRESS_WARNING_POP
 		#endif
 	}
+
+	#undef CALLME_ATTRIBUTE_ABI
 }
