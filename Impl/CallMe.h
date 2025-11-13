@@ -649,7 +649,7 @@ namespace CallMe
 			requires internal::MethodMatchesClass<Method, Object> and internal::MemberFunction<decltype(Method)>
 		explicit Delegate(Object* object, tag<Method>) noexcept :
 			Erased(MethodInvokerT<Object,Method>::invoke,
-				   (internal::PErasedObject)object)
+				   static_cast<internal::PErasedObject>(object))
 		{
 			assert(object!=nullptr);
 		}
@@ -674,7 +674,7 @@ namespace CallMe
 					 internal::MemberFunction<decltype(Method)>
 		explicit Delegate(Object& object, tag<Method>) noexcept :
 			Erased(MethodInvokerT<Object,Method>::invoke,
-				   (internal::PErasedObject)&object)
+				   static_cast<internal::PErasedObject>(&object))
 		{
 		}
 
