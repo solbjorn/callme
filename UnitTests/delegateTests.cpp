@@ -1,4 +1,4 @@
-﻿// ReSharper disable CppEntityUsedOnlyInUnevaluatedContext
+// ReSharper disable CppEntityUsedOnlyInUnevaluatedContext
 
 #include "doctest.h"
 

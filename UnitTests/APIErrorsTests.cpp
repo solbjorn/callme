@@ -558,4 +558,4 @@ TEST_SUITE("API error tests")
 			);
 		}
 	}
-}	
+}

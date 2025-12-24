@@ -1,4 +1,4 @@
-﻿/** small_vector.hpp
+/** small_vector.hpp
 * An implementation of `small_vector` (a vector with a small
 * buffer optimization). I would probably have preferred to
 * call this `inline_vector`, but I'll just go with the canonical

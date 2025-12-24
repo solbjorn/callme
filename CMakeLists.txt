@@ -1,4 +1,4 @@
-﻿cmake_minimum_required(VERSION 3.25)
+cmake_minimum_required(VERSION 3.25)
 
 set(CMAKE_USER_MAKE_RULES_OVERRIDE "CMakeFlags.cmake")
 

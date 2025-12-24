@@ -1,4 +1,4 @@
-﻿/*
+/*
 * MIT License
 *
 * Copyright (c) 2023 Dmitry Kim <https://github.com/bitsbakery/pretty>
